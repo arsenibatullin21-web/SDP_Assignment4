@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title { font: bold 26px Arial, sans-serif; fill: #111827; }
+      .group { font: bold 20px Arial, sans-serif; fill: #0f172a; }
+      .name { font: bold 15px Arial, sans-serif; fill: #111827; }
+      .type { font: 12px Arial, sans-serif; fill: #475569; }
+      .box { fill: #ffffff; stroke: #64748b; stroke-width: 2; rx: 7; }
+      .facade { fill: #dbeafe; stroke: #2563eb; stroke-width: 2.5; rx: 7; }
+      .entity { fill: #f8fafc; stroke: #64748b; stroke-width: 2; rx: 7; }
+      .service { fill: #dcfce7; stroke: #16a34a; stroke-width: 2; rx: 7; }
+      .repo { fill: #fef3c7; stroke: #d97706; stroke-width: 2; rx: 7; }
+      .line { stroke: #334155; stroke-width: 1.8; fill: none; marker-end: url(#arrow); }
+      .groupbox { fill: none; stroke: #cbd5e1; stroke-width: 2; rx: 12; stroke-dasharray: 8 5; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1000" fill="#ffffff"/>
+  <text x="800" y="38" text-anchor="middle" class="title">Smart Parking Garage Class Diagram</text>
+
+  <rect x="30" y="70" width="1540" height="220" class="groupbox"/>
+  <text x="50" y="98" class="group">Client and Facade layer</text>
+
+  <rect x="70" y="135" width="150" height="58" class="box"/>
+  <text x="145" y="158" text-anchor="middle" class="name">Main</text>
+  <text x="145" y="178" text-anchor="middle" class="type">client</text>
+
+  <rect x="310" y="115" width="210" height="58" class="facade"/>
+  <text x="415" y="149" text-anchor="middle" class="name">ParkingFacade</text>
+  <rect x="310" y="195" width="210" height="58" class="facade"/>
+  <text x="415" y="229" text-anchor="middle" class="name">ParkingAdminFacade</text>
+
+  <rect x="630" y="95" width="200" height="58" class="entity"/>
+  <text x="730" y="119" text-anchor="middle" class="name">ParkingOperation</text>
+  <text x="730" y="139" text-anchor="middle" class="type">progress entity</text>
+  <rect x="630" y="175" width="200" height="58" class="repo"/>
+  <text x="730" y="198" text-anchor="middle" class="name">OperationRepository</text>
+  <text x="730" y="218" text-anchor="middle" class="type">operations.csv</text>
+  <rect x="900" y="95" width="220" height="58" class="repo"/>
+  <text x="1010" y="118" text-anchor="middle" class="name">OperationHistoryRepository</text>
+  <text x="1010" y="138" text-anchor="middle" class="type">history.csv</text>
+  <rect x="900" y="175" width="175" height="58" class="entity"/>
+  <text x="987" y="198" text-anchor="middle" class="name">OperationStatus</text>
+  <text x="987" y="218" text-anchor="middle" class="type">enum</text>
+  <rect x="1190" y="135" width="175" height="58" class="entity"/>
+  <text x="1277" y="158" text-anchor="middle" class="name">FailurePoint</text>
+  <text x="1277" y="178" text-anchor="middle" class="type">enum</text>
+
+  <path d="M220 153 L310 144" class="line"/>
+  <path d="M220 176 L310 224" class="line"/>
+  <path d="M520 137 L630 124" class="line"/>
+  <path d="M520 151 L630 204" class="line"/>
+  <path d="M520 224 L630 204" class="line"/>
+  <path d="M830 124 L900 124" class="line"/>
+  <path d="M830 137 L900 204" class="line"/>
+  <path d="M1075 204 L1190 164" class="line"/>
+
+  <rect x="30" y="325" width="480" height="625" class="groupbox"/>
+  <text x="50" y="355" class="group">Subsystem A: Vehicle Entry</text>
+  <rect x="145" y="395" width="250" height="62" class="service"/>
+  <text x="270" y="422" text-anchor="middle" class="name">EntryService</text>
+  <text x="270" y="443" text-anchor="middle" class="type">business operations</text>
+  <rect x="60" y="520" width="190" height="62" class="repo"/>
+  <text x="155" y="547" text-anchor="middle" class="name">EntryRepository</text>
+  <text x="155" y="568" text-anchor="middle" class="type">entries.csv</text>
+  <rect x="285" y="520" width="190" height="62" class="box"/>
+  <text x="380" y="547" text-anchor="middle" class="name">LicensePlateValidator</text>
+  <text x="380" y="568" text-anchor="middle" class="type">business rule</text>
+  <rect x="145" y="650" width="250" height="62" class="entity"/>
+  <text x="270" y="677" text-anchor="middle" class="name">VehicleEntry</text>
+  <text x="270" y="698" text-anchor="middle" class="type">state and transitions</text>
+  <rect x="172" y="790" width="196" height="62" class="entity"/>
+  <text x="270" y="817" text-anchor="middle" class="name">EntryStatus</text>
+  <text x="270" y="838" text-anchor="middle" class="type">enum</text>
+  <path d="M235 457 L170 520" class="line"/>
+  <path d="M305 457 L370 520" class="line"/>
+  <path d="M155 582 L245 650" class="line"/>
+  <path d="M270 712 L270 790" class="line"/>
+
+  <rect x="560" y="325" width="480" height="625" class="groupbox"/>
+  <text x="580" y="355" class="group">Subsystem B: Space Reservation</text>
+  <rect x="675" y="395" width="250" height="62" class="service"/>
+  <text x="800" y="422" text-anchor="middle" class="name">ParkingService</text>
+  <text x="800" y="443" text-anchor="middle" class="type">reservation operations</text>
+  <rect x="590" y="520" width="190" height="62" class="repo"/>
+  <text x="685" y="547" text-anchor="middle" class="name">ParkingRepository</text>
+  <text x="685" y="568" text-anchor="middle" class="type">reservations.csv</text>
+  <rect x="815" y="520" width="190" height="62" class="box"/>
+  <text x="910" y="547" text-anchor="middle" class="name">ParkingFeeCalculator</text>
+  <text x="910" y="568" text-anchor="middle" class="type">business rule</text>
+  <rect x="675" y="650" width="250" height="62" class="entity"/>
+  <text x="800" y="677" text-anchor="middle" class="name">ParkingReservation</text>
+  <text x="800" y="698" text-anchor="middle" class="type">state and transitions</text>
+  <rect x="702" y="790" width="196" height="62" class="entity"/>
+  <text x="800" y="817" text-anchor="middle" class="name">ReservationStatus</text>
+  <text x="800" y="838" text-anchor="middle" class="type">enum</text>
+  <path d="M765 457 L700 520" class="line"/>
+  <path d="M835 457 L900 520" class="line"/>
+  <path d="M685 582 L775 650" class="line"/>
+  <path d="M800 712 L800 790" class="line"/>
+
+  <rect x="1090" y="325" width="480" height="625" class="groupbox"/>
+  <text x="1110" y="355" class="group">Subsystem C: Payment</text>
+  <rect x="1205" y="395" width="250" height="62" class="service"/>
+  <text x="1330" y="422" text-anchor="middle" class="name">PaymentService</text>
+  <text x="1330" y="443" text-anchor="middle" class="type">payment operations</text>
+  <rect x="1120" y="520" width="190" height="62" class="repo"/>
+  <text x="1215" y="547" text-anchor="middle" class="name">PaymentRepository</text>
+  <text x="1215" y="568" text-anchor="middle" class="type">payments.csv</text>
+  <rect x="1345" y="520" width="190" height="62" class="box"/>
+  <text x="1440" y="547" text-anchor="middle" class="name">PaymentAmountValidator</text>
+  <text x="1440" y="568" text-anchor="middle" class="type">business rule</text>
+  <rect x="1205" y="650" width="250" height="62" class="entity"/>
+  <text x="1330" y="677" text-anchor="middle" class="name">Payment</text>
+  <text x="1330" y="698" text-anchor="middle" class="type">state and transitions</text>
+  <rect x="1232" y="790" width="196" height="62" class="entity"/>
+  <text x="1330" y="817" text-anchor="middle" class="name">PaymentStatus</text>
+  <text x="1330" y="838" text-anchor="middle" class="type">enum</text>
+  <path d="M1295 457 L1230 520" class="line"/>
+  <path d="M1365 457 L1430 520" class="line"/>
+  <path d="M1215 582 L1305 650" class="line"/>
+  <path d="M1330 712 L1330 790" class="line"/>
+
+  <path d="M385 253 C385 310 270 320 270 395" class="line"/>
+  <path d="M415 253 C415 300 800 310 800 395" class="line"/>
+  <path d="M445 253 C445 290 1330 300 1330 395" class="line"/>
+  <path d="M465 173 C465 285 270 295 270 395" class="line"/>
+  <path d="M485 173 C485 275 800 295 800 395" class="line"/>
+  <path d="M505 173 C505 265 1330 285 1330 395" class="line"/>
+
+  <text x="800" y="982" text-anchor="middle" class="type">Subsystems are independent; only the facade layer coordinates them.</text>
+</svg>

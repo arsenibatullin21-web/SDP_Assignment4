@@ -1,0 +1,70 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class Main
+
+package "Facade layer" {
+  class ParkingFacade
+  class ParkingAdminFacade
+  class ParkingOperation
+  enum OperationStatus
+  enum FailurePoint
+  class OperationRepository
+  class OperationHistoryRepository
+}
+
+package "Subsystem A Entry" {
+  class EntryService
+  class EntryRepository
+  class VehicleEntry
+  enum EntryStatus
+  class LicensePlateValidator
+}
+
+package "Subsystem B Parking" {
+  class ParkingService
+  class ParkingRepository
+  class ParkingReservation
+  enum ReservationStatus
+  class ParkingFeeCalculator
+}
+
+package "Subsystem C Payment" {
+  class PaymentService
+  class PaymentRepository
+  class Payment
+  enum PaymentStatus
+  class PaymentAmountValidator
+}
+
+Main --> ParkingFacade
+Main --> ParkingAdminFacade
+ParkingFacade --> EntryService
+ParkingFacade --> ParkingService
+ParkingFacade --> PaymentService
+ParkingFacade --> OperationRepository
+ParkingFacade --> OperationHistoryRepository
+ParkingAdminFacade --> EntryService
+ParkingAdminFacade --> ParkingService
+ParkingAdminFacade --> PaymentService
+ParkingAdminFacade --> OperationRepository
+ParkingAdminFacade --> OperationHistoryRepository
+OperationRepository --> ParkingOperation
+ParkingOperation --> OperationStatus
+ParkingFacade --> FailurePoint
+
+EntryService --> EntryRepository
+EntryService --> LicensePlateValidator
+EntryRepository --> VehicleEntry
+VehicleEntry --> EntryStatus
+
+ParkingService --> ParkingRepository
+ParkingService --> ParkingFeeCalculator
+ParkingRepository --> ParkingReservation
+ParkingReservation --> ReservationStatus
+
+PaymentService --> PaymentRepository
+PaymentService --> PaymentAmountValidator
+PaymentRepository --> Payment
+Payment --> PaymentStatus
+@enduml
