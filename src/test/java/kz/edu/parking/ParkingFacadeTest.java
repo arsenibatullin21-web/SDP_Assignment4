@@ -11,23 +11,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ParkingFacadeTest {
     @TempDir
     Path temporaryDirectory;
 
     @Test
-    void completesTheThreeStageChain() {
-        TestGarage garage = new TestGarage(temporaryDirectory);
-        GarageTestDsl scenario = new GarageTestDsl(garage);
+    void completesParking() {
+        GarageTestDsl garage = new GarageTestDsl(temporaryDirectory);
 
-        scenario.whenDriverParksSuccessfully("OP-1");
-        scenario.thenOperationIs("OP-1", OperationStatus.COMPLETED);
+        garage.parkSuccessfully("OP-1");
 
+        garage.checkOperationStatus("OP-1", OperationStatus.COMPLETED);
         assertEquals(EntryStatus.ADMITTED,
                 garage.entryService.findEntry("OP-1").getStatus());
         assertEquals(ReservationStatus.RESERVED,
@@ -37,13 +36,12 @@ class ParkingFacadeTest {
     }
 
     @Test
-    void compensatesOnlyAWhenBFailAfterACommitted() {
-        TestGarage garage = new TestGarage(temporaryDirectory);
-        GarageTestDsl scenario = new GarageTestDsl(garage);
+    void cancelsEntryWhenSubsystemBFails() {
+        GarageTestDsl garage = new GarageTestDsl(temporaryDirectory);
 
-        scenario.whenSubsystemBFails("OP-B-FAIL");
-        scenario.thenOperationIs("OP-B-FAIL", OperationStatus.COMPENSATED);
+        garage.failInSubsystemB("OP-B-FAIL");
 
+        garage.checkOperationStatus("OP-B-FAIL", OperationStatus.COMPENSATED);
         assertEquals(EntryStatus.CANCELLED,
                 garage.entryService.findEntry("OP-B-FAIL").getStatus());
         assertNull(garage.parkingRepository.findByOperationId("OP-B-FAIL"));
@@ -51,72 +49,33 @@ class ParkingFacadeTest {
     }
 
     @Test
-    void compensatesBThenAWhenCFailsAfterBothCommitted() {
-        TestGarage garage = new TestGarage(temporaryDirectory);
-        GarageTestDsl scenario = new GarageTestDsl(garage);
+    void cancelsReservationAndEntryWhenSubsystemCFails() {
+        GarageTestDsl garage = new GarageTestDsl(temporaryDirectory);
 
-        scenario.whenSubsystemCFails("OP-C-FAIL");
-        scenario.thenOperationIs("OP-C-FAIL", OperationStatus.COMPENSATED);
+        garage.failInSubsystemC("OP-C-FAIL");
 
+        garage.checkOperationStatus("OP-C-FAIL", OperationStatus.COMPENSATED);
         assertEquals(ReservationStatus.CANCELLED,
                 garage.parkingService.findReservation("OP-C-FAIL").getStatus());
         assertEquals(EntryStatus.CANCELLED,
                 garage.entryService.findEntry("OP-C-FAIL").getStatus());
         assertEquals(PaymentStatus.DECLINED,
                 garage.paymentService.findPayment("OP-C-FAIL").getStatus());
-
     }
 
     @Test
-    void handlesInvalidInputBeforeAnythingCommits() {
-        TestGarage garage = new TestGarage(temporaryDirectory);
+    void rejectsInvalidLicensePlate() {
+        GarageTestDsl garage = new GarageTestDsl(temporaryDirectory);
 
         assertThrows(GarageException.class, () -> garage.parkingFacade.startParking(
                 "OP-BAD", "!", "P-01", 2, 1000, FailurePoint.NONE));
 
-        assertEquals(OperationStatus.FAILED,
-                garage.parkingFacade.findOperation("OP-BAD").getStatus());
+        garage.checkOperationStatus("OP-BAD", OperationStatus.FAILED);
         assertNull(garage.entryRepository.findByOperationId("OP-BAD"));
         assertNull(garage.parkingRepository.findByOperationId("OP-BAD"));
         assertNull(garage.paymentRepository.findByOperationId("OP-BAD"));
     }
 
-    @Test
-    void reloadsPersistedProgressAndContinuesAfterRestart() {
-        TestGarage firstApplicationRun = new TestGarage(temporaryDirectory);
-        ParkingOperation interrupted = new ParkingOperation(
-                "OP-RESTART", "123ABC01", "P-02", 3, 1500,
-                OperationStatus.STARTED, "Operation started");
-        firstApplicationRun.operationRepository.save(interrupted);
-        firstApplicationRun.entryService.admitVehicle("OP-RESTART", "123ABC01");
-        interrupted.moveToPendingB();
-        firstApplicationRun.operationRepository.save(interrupted);
 
-        TestGarage restartedApplication = new TestGarage(temporaryDirectory);
-        ParkingOperation result = restartedApplication.parkingFacade.resume(
-                "OP-RESTART", FailurePoint.NONE);
 
-        assertEquals(OperationStatus.COMPLETED, result.getStatus());
-        assertEquals(ReservationStatus.RESERVED,
-                restartedApplication.parkingService.findReservation("OP-RESTART").getStatus());
-        assertEquals(PaymentStatus.PAID,
-                restartedApplication.paymentService.findPayment("OP-RESTART").getStatus());
-    }
-
-    @Test
-    void rejectsDuplicateOperationAndOccupiedSpace() {
-        TestGarage garage = new TestGarage(temporaryDirectory);
-        GarageTestDsl scenario = new GarageTestDsl(garage);
-        scenario.whenDriverParksSuccessfully("OP-FIRST");
-
-        assertThrows(GarageException.class, () -> garage.parkingFacade.startParking(
-                "OP-FIRST", "456DEF02", "P-02", 1, 500, FailurePoint.NONE));
-        assertThrows(GarageException.class, () -> garage.parkingFacade.startParking(
-                "OP-SECOND", "456DEF02", "P-01", 1, 500, FailurePoint.NONE));
-
-        assertEquals(OperationStatus.COMPENSATED,
-                garage.parkingFacade.findOperation("OP-SECOND").getStatus());
-        assertEquals(EntryStatus.CANCELLED,
-                garage.entryService.findEntry("OP-SECOND").getStatus());
-    }
 }

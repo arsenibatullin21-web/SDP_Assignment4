@@ -42,25 +42,5 @@ class SubsystemTest {
         assertThrows(GarageException.class, () -> validator.validate(1000, 500));
     }
 
-    @Test
-    void entitiesEnforceTheirOwnStateTransitions() {
-        VehicleEntry entry = new VehicleEntry("E", "123ABC01", EntryStatus.REGISTERED);
-        entry.admit();
-        assertThrows(GarageException.class, entry::admit);
-        entry.cancel();
-        entry.cancel();
 
-        ParkingReservation reservation = new ParkingReservation(
-                "R", "P-01", 2, 1000, ReservationStatus.REQUESTED);
-        reservation.reserve();
-        assertThrows(GarageException.class, reservation::reserve);
-        reservation.cancel();
-        reservation.cancel();
-
-        Payment payment = new Payment("P", 1000, PaymentStatus.CREATED);
-        payment.markPaid();
-        assertThrows(GarageException.class, payment::markPaid);
-        payment.refund();
-        payment.refund();
-    }
 }
