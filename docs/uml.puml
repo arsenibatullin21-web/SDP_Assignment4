@@ -10,7 +10,6 @@ package "Facade layer" {
   enum OperationStatus
   enum FailurePoint
   class OperationRepository
-  class OperationHistoryRepository
 }
 
 package "Subsystem A Entry" {
@@ -43,12 +42,10 @@ ParkingFacade --> EntryService
 ParkingFacade --> ParkingService
 ParkingFacade --> PaymentService
 ParkingFacade --> OperationRepository
-ParkingFacade --> OperationHistoryRepository
 ParkingAdminFacade --> EntryService
 ParkingAdminFacade --> ParkingService
 ParkingAdminFacade --> PaymentService
 ParkingAdminFacade --> OperationRepository
-ParkingAdminFacade --> OperationHistoryRepository
 OperationRepository --> ParkingOperation
 ParkingOperation --> OperationStatus
 ParkingFacade --> FailurePoint

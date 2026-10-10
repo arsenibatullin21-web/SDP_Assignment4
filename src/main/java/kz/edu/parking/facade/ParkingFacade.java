@@ -11,16 +11,13 @@ public class ParkingFacade {
     private final ParkingService parkingService;
     private final PaymentService paymentService;
     private final OperationRepository operationRepository;
-    private final OperationHistoryRepository historyRepository;
 
     public ParkingFacade(EntryService entryService, ParkingService parkingService,
-                         PaymentService paymentService, OperationRepository operationRepository,
-                         OperationHistoryRepository historyRepository) {
+                         PaymentService paymentService, OperationRepository operationRepository) {
         this.entryService = entryService;
         this.parkingService = parkingService;
         this.paymentService = paymentService;
         this.operationRepository = operationRepository;
-        this.historyRepository = historyRepository;
     }
 
     public ParkingOperation startParking(String operationId, String licensePlate, String spaceId,
@@ -33,7 +30,6 @@ public class ParkingFacade {
                 operationId, licensePlate, spaceId, hours, paidAmount,
                 OperationStatus.STARTED, "Operation started");
         operationRepository.save(operation);
-        historyRepository.add(operationId, "OPERATION_STARTED");
         return resume(operationId, failurePoint);
     }
 
@@ -49,7 +45,6 @@ public class ParkingFacade {
         try {
             if (operation.getStatus() == OperationStatus.STARTED) {
                 entryService.admitVehicle(operationId, operation.getLicensePlate());
-                historyRepository.add(operationId, "ENTRY_ADMITTED");
                 operation.moveToPendingB();
                 operationRepository.save(operation);
             }
@@ -58,7 +53,6 @@ public class ParkingFacade {
             if (operation.getStatus() == OperationStatus.PENDING_B) {
                 boolean fail = failurePoint == FailurePoint.SUBSYSTEM_B;
                 parkingService.reserveSpace(operationId, operation.getSpaceId(), operation.getHours(), fail);
-                historyRepository.add(operationId, "SPACE_RESERVED");
                 operation.moveToPendingC();
                 operationRepository.save(operation);
             }
@@ -69,7 +63,6 @@ public class ParkingFacade {
                 boolean fail = failurePoint == FailurePoint.SUBSYSTEM_C;
                 paymentService.processPayment(
                         operationId, reservation.getFee(), operation.getPaidAmount(), fail);
-                historyRepository.add(operationId, "PAYMENT_COMPLETED");
                 operation.complete();
                 operationRepository.save(operation);
             }
@@ -96,13 +89,10 @@ public class ParkingFacade {
 
         if (persistedOperation.getStatus() == OperationStatus.PENDING_C) {
             parkingService.cancelReservation(operationId);
-            historyRepository.add(operationId, "RESERVATION_CANCELLED");
             entryService.cancelEntry(operationId);
-            historyRepository.add(operationId, "ENTRY_CANCELLED");
             persistedOperation.compensate("Payment failed: " + reason);
         } else if (persistedOperation.getStatus() == OperationStatus.PENDING_B) {
             entryService.cancelEntry(operationId);
-            historyRepository.add(operationId, "ENTRY_CANCELLED");
             persistedOperation.compensate("Space reservation failed: " + reason);
         } else {
             persistedOperation.fail("Entry failed: " + reason);

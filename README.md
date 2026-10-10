@@ -25,7 +25,7 @@ The operation statuses are `STARTED`, `PENDING_B`, `PENDING_C`, `COMPLETED`, `CO
 - If C fails after A and B committed, the facade cancels B first and A second.
 - For manual compensation of a completed operation, the admin facade refunds C, cancels B, and then cancels A.
 
-The compensation order is written to `data/history.csv` and is asserted in the unit tests.
+The compensation order is explicit in `ParkingFacade`: subsystem B is cancelled before subsystem A. The tests verify the persisted final state of both subsystems.
 
 ## Build and run
 
@@ -89,7 +89,7 @@ The problem needs a Facade because the existing subsystem interfaces are already
 
 ## Tests
 
-JUnit 5 tests use a new temporary directory for every test, so they are fast, independent, repeatable, and self-validating. `GarageTestDsl` provides domain-language helpers such as `whenSubsystemBFails` and `thenOperationIs`. Tests cover the happy path, both compensation depths, persistence reload after a simulated restart, invalid input, occupied spaces, duplicate operations, and administrative compensation.
+JUnit 5 tests use a new temporary directory for every test, so they are fast, independent, repeatable, and self-validating. `GarageTestDsl` provides domain-language helpers such as `whenSubsystemBFails` and `thenOperationIs`. Tests cover the happy path, both compensation depths and their persisted final states, persistence reload after a simulated restart, invalid input, occupied spaces, duplicate operations, and administrative compensation.
 
 ## UML
 

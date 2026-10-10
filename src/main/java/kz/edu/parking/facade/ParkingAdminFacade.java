@@ -12,16 +12,13 @@ public class ParkingAdminFacade {
     private final ParkingService parkingService;
     private final PaymentService paymentService;
     private final OperationRepository operationRepository;
-    private final OperationHistoryRepository historyRepository;
 
     public ParkingAdminFacade(EntryService entryService, ParkingService parkingService,
-                              PaymentService paymentService, OperationRepository operationRepository,
-                              OperationHistoryRepository historyRepository) {
+                              PaymentService paymentService, OperationRepository operationRepository) {
         this.entryService = entryService;
         this.parkingService = parkingService;
         this.paymentService = paymentService;
         this.operationRepository = operationRepository;
-        this.historyRepository = historyRepository;
     }
 
     public String inspect(String operationId) {
@@ -37,10 +34,6 @@ public class ParkingAdminFacade {
         return operationRepository.findAll();
     }
 
-    public List<String> findHistory(String operationId) {
-        return historyRepository.findEvents(operationId);
-    }
-
     public ParkingOperation compensateManually(String operationId) {
         ParkingOperation operation = findOperation(operationId);
 
@@ -50,19 +43,13 @@ public class ParkingAdminFacade {
 
         if (operation.getStatus() == OperationStatus.COMPLETED) {
             paymentService.refundPayment(operationId);
-            historyRepository.add(operationId, "PAYMENT_REFUNDED");
             parkingService.cancelReservation(operationId);
-            historyRepository.add(operationId, "RESERVATION_CANCELLED");
             entryService.cancelEntry(operationId);
-            historyRepository.add(operationId, "ENTRY_CANCELLED");
         } else if (operation.getStatus() == OperationStatus.PENDING_C) {
             parkingService.cancelReservation(operationId);
-            historyRepository.add(operationId, "RESERVATION_CANCELLED");
             entryService.cancelEntry(operationId);
-            historyRepository.add(operationId, "ENTRY_CANCELLED");
         } else if (operation.getStatus() == OperationStatus.PENDING_B) {
             entryService.cancelEntry(operationId);
-            historyRepository.add(operationId, "ENTRY_CANCELLED");
         } else if (operation.getStatus() != OperationStatus.STARTED
                 && operation.getStatus() != OperationStatus.FAILED) {
             throw new GarageException("Operation cannot be compensated from " + operation.getStatus());

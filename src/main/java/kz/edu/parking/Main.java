@@ -5,7 +5,6 @@ import kz.edu.parking.entry.EntryRepository;
 import kz.edu.parking.entry.EntryService;
 import kz.edu.parking.entry.LicensePlateValidator;
 import kz.edu.parking.facade.FailurePoint;
-import kz.edu.parking.facade.OperationHistoryRepository;
 import kz.edu.parking.facade.OperationRepository;
 import kz.edu.parking.facade.ParkingAdminFacade;
 import kz.edu.parking.facade.ParkingFacade;
@@ -31,14 +30,12 @@ public class Main {
         PaymentService paymentService = new PaymentService(
                 new PaymentRepository(dataDirectory), new PaymentAmountValidator());
         OperationRepository operationRepository = new OperationRepository(dataDirectory);
-        OperationHistoryRepository historyRepository = new OperationHistoryRepository(dataDirectory);
-
         ParkingFacade parkingFacade = new ParkingFacade(
                 entryService, parkingService, paymentService,
-                operationRepository, historyRepository);
+                operationRepository);
         ParkingAdminFacade adminFacade = new ParkingAdminFacade(
                 entryService, parkingService, paymentService,
-                operationRepository, historyRepository);
+                operationRepository);
 
         Scanner scanner = new Scanner(System.in);
         boolean running = true;
@@ -102,7 +99,6 @@ public class Main {
 
         for (ParkingOperation operation : adminFacade.findAllOperations()) {
             System.out.println(adminFacade.inspect(operation.getId()));
-            System.out.println("History: " + adminFacade.findHistory(operation.getId()));
         }
     }
 

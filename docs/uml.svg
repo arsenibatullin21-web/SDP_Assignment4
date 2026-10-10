@@ -39,9 +39,6 @@
   <rect x="630" y="175" width="200" height="58" class="repo"/>
   <text x="730" y="198" text-anchor="middle" class="name">OperationRepository</text>
   <text x="730" y="218" text-anchor="middle" class="type">operations.csv</text>
-  <rect x="900" y="95" width="220" height="58" class="repo"/>
-  <text x="1010" y="118" text-anchor="middle" class="name">OperationHistoryRepository</text>
-  <text x="1010" y="138" text-anchor="middle" class="type">history.csv</text>
   <rect x="900" y="175" width="175" height="58" class="entity"/>
   <text x="987" y="198" text-anchor="middle" class="name">OperationStatus</text>
   <text x="987" y="218" text-anchor="middle" class="type">enum</text>
@@ -54,7 +51,6 @@
   <path d="M520 137 L630 124" class="line"/>
   <path d="M520 151 L630 204" class="line"/>
   <path d="M520 224 L630 204" class="line"/>
-  <path d="M830 124 L900 124" class="line"/>
   <path d="M830 137 L900 204" class="line"/>
   <path d="M1075 204 L1190 164" class="line"/>
 

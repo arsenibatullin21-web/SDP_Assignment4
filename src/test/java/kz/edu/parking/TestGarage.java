@@ -3,7 +3,6 @@ package kz.edu.parking;
 import kz.edu.parking.entry.EntryRepository;
 import kz.edu.parking.entry.EntryService;
 import kz.edu.parking.entry.LicensePlateValidator;
-import kz.edu.parking.facade.OperationHistoryRepository;
 import kz.edu.parking.facade.OperationRepository;
 import kz.edu.parking.facade.ParkingAdminFacade;
 import kz.edu.parking.facade.ParkingFacade;
@@ -24,7 +23,6 @@ class TestGarage {
     final PaymentRepository paymentRepository;
     final PaymentService paymentService;
     final OperationRepository operationRepository;
-    final OperationHistoryRepository historyRepository;
     final ParkingFacade parkingFacade;
     final ParkingAdminFacade adminFacade;
 
@@ -36,10 +34,9 @@ class TestGarage {
         paymentRepository = new PaymentRepository(directory);
         paymentService = new PaymentService(paymentRepository, new PaymentAmountValidator());
         operationRepository = new OperationRepository(directory);
-        historyRepository = new OperationHistoryRepository(directory);
         parkingFacade = new ParkingFacade(entryService, parkingService, paymentService,
-                operationRepository, historyRepository);
+                operationRepository);
         adminFacade = new ParkingAdminFacade(entryService, parkingService, paymentService,
-                operationRepository, historyRepository);
+                operationRepository);
     }
 }
