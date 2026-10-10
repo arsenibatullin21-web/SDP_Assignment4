@@ -74,7 +74,12 @@ public class ParkingAdminFacade {
     }
 
     private ParkingOperation findOperation(String operationId) {
-        return operationRepository.findById(operationId)
-                .orElseThrow(() -> new GarageException("Operation not found: " + operationId));
+        ParkingOperation operation = operationRepository.findById(operationId);
+
+        if (operation == null) {
+            throw new GarageException("Operation not found: " + operationId);
+        }
+
+        return operation;
     }
 }

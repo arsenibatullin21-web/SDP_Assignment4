@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,8 +49,8 @@ class ParkingFacadeTest {
 
         assertEquals(EntryStatus.CANCELLED,
                 garage.entryService.findEntry("OP-B-FAIL").getStatus());
-        assertTrue(garage.parkingRepository.findByOperationId("OP-B-FAIL").isEmpty());
-        assertTrue(garage.paymentRepository.findByOperationId("OP-B-FAIL").isEmpty());
+        assertNull(garage.parkingRepository.findByOperationId("OP-B-FAIL"));
+        assertNull(garage.paymentRepository.findByOperationId("OP-B-FAIL"));
         assertEquals(List.of("OPERATION_STARTED", "ENTRY_ADMITTED", "ENTRY_CANCELLED"),
                 garage.historyRepository.findEvents("OP-B-FAIL"));
     }
@@ -84,9 +85,9 @@ class ParkingFacadeTest {
 
         assertEquals(OperationStatus.FAILED,
                 garage.parkingFacade.findOperation("OP-BAD").getStatus());
-        assertTrue(garage.entryRepository.findByOperationId("OP-BAD").isEmpty());
-        assertTrue(garage.parkingRepository.findByOperationId("OP-BAD").isEmpty());
-        assertTrue(garage.paymentRepository.findByOperationId("OP-BAD").isEmpty());
+        assertNull(garage.entryRepository.findByOperationId("OP-BAD"));
+        assertNull(garage.parkingRepository.findByOperationId("OP-BAD"));
+        assertNull(garage.paymentRepository.findByOperationId("OP-BAD"));
     }
 
     @Test

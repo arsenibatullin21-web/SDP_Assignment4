@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class EntryRepository {
     private final Path file;
@@ -20,8 +19,20 @@ public class EntryRepository {
 
     public void save(VehicleEntry entry) {
         List<VehicleEntry> entries = findAll();
-        entries.removeIf(saved -> saved.getOperationId().equals(entry.getOperationId()));
-        entries.add(entry);
+        boolean entryWasUpdated = false;
+
+        for (int i = 0; i < entries.size(); i++) {
+            VehicleEntry savedEntry = entries.get(i);
+            if (savedEntry.getOperationId().equals(entry.getOperationId())) {
+                entries.set(i, entry);
+                entryWasUpdated = true;
+                break;
+            }
+        }
+
+        if (!entryWasUpdated) {
+            entries.add(entry);
+        }
 
         List<String> lines = new ArrayList<>();
         for (VehicleEntry saved : entries) {
@@ -30,13 +41,13 @@ public class EntryRepository {
         write(lines);
     }
 
-    public Optional<VehicleEntry> findByOperationId(String operationId) {
+    public VehicleEntry findByOperationId(String operationId) {
         for (VehicleEntry entry : findAll()) {
             if (entry.getOperationId().equals(operationId)) {
-                return Optional.of(entry);
+                return entry;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     public List<VehicleEntry> findAll() {

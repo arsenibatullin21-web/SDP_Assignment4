@@ -25,7 +25,7 @@ public class ParkingFacade {
 
     public ParkingOperation startParking(String operationId, String licensePlate, String spaceId,
                                          int hours, int paidAmount, FailurePoint failurePoint) {
-        if (operationRepository.findById(operationId).isPresent()) {
+        if (operationRepository.findById(operationId) != null) {
             throw new GarageException("Operation already exists: " + operationId);
         }
 
@@ -82,8 +82,13 @@ public class ParkingFacade {
     }
 
     public ParkingOperation findOperation(String operationId) {
-        return operationRepository.findById(operationId)
-                .orElseThrow(() -> new GarageException("Operation not found: " + operationId));
+        ParkingOperation operation = operationRepository.findById(operationId);
+
+        if (operation == null) {
+            throw new GarageException("Operation not found: " + operationId);
+        }
+
+        return operation;
     }
 
     private void compensateAfterFailure(String operationId, String reason) {

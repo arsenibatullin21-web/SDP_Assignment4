@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class OperationRepository {
     private final Path file;
@@ -20,8 +19,20 @@ public class OperationRepository {
 
     public void save(ParkingOperation operation) {
         List<ParkingOperation> operations = findAll();
-        operations.removeIf(saved -> saved.getId().equals(operation.getId()));
-        operations.add(operation);
+        boolean operationWasUpdated = false;
+
+        for (int i = 0; i < operations.size(); i++) {
+            ParkingOperation savedOperation = operations.get(i);
+            if (savedOperation.getId().equals(operation.getId())) {
+                operations.set(i, operation);
+                operationWasUpdated = true;
+                break;
+            }
+        }
+
+        if (!operationWasUpdated) {
+            operations.add(operation);
+        }
 
         List<String> lines = new ArrayList<>();
         for (ParkingOperation saved : operations) {
@@ -33,13 +44,13 @@ public class OperationRepository {
         write(lines);
     }
 
-    public Optional<ParkingOperation> findById(String id) {
+    public ParkingOperation findById(String id) {
         for (ParkingOperation operation : findAll()) {
             if (operation.getId().equals(id)) {
-                return Optional.of(operation);
+                return operation;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     public List<ParkingOperation> findAll() {

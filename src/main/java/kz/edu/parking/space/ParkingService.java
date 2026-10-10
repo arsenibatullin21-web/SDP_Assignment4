@@ -33,14 +33,23 @@ public class ParkingService {
     }
 
     public void cancelReservation(String operationId) {
-        ParkingReservation reservation = repository.findByOperationId(operationId)
-                .orElseThrow(() -> new GarageException("Reservation not found: " + operationId));
+        ParkingReservation reservation = repository.findByOperationId(operationId);
+
+        if (reservation == null) {
+            throw new GarageException("Reservation not found: " + operationId);
+        }
+
         reservation.cancel();
         repository.save(reservation);
     }
 
     public ParkingReservation findReservation(String operationId) {
-        return repository.findByOperationId(operationId)
-                .orElseThrow(() -> new GarageException("Reservation not found: " + operationId));
+        ParkingReservation reservation = repository.findByOperationId(operationId);
+
+        if (reservation == null) {
+            throw new GarageException("Reservation not found: " + operationId);
+        }
+
+        return reservation;
     }
 }

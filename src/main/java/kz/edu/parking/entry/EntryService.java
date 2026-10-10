@@ -22,14 +22,30 @@ public class EntryService {
     }
 
     public void cancelEntry(String operationId) {
-        VehicleEntry entry = repository.findByOperationId(operationId)
-                .orElseThrow(() -> new GarageException("Entry not found: " + operationId));
+        VehicleEntry entry =
+                repository.findByOperationId(operationId);
+
+        if (entry == null) {
+            throw new GarageException(
+                    "Entry not found: " + operationId
+            );
+        }
+
         entry.cancel();
         repository.save(entry);
     }
 
     public VehicleEntry findEntry(String operationId) {
-        return repository.findByOperationId(operationId)
-                .orElseThrow(() -> new GarageException("Entry not found: " + operationId));
+        VehicleEntry entry =
+                repository.findByOperationId(operationId);
+
+        if (entry == null) {
+            throw new GarageException(
+                    "Entry not found: " + operationId
+            );
+        }
+
+        return entry;
     }
+
 }

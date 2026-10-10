@@ -32,14 +32,23 @@ public class PaymentService {
     }
 
     public void refundPayment(String operationId) {
-        Payment payment = repository.findByOperationId(operationId)
-                .orElseThrow(() -> new GarageException("Payment not found: " + operationId));
+        Payment payment = repository.findByOperationId(operationId);
+
+        if (payment == null) {
+            throw new GarageException("Payment not found: " + operationId);
+        }
+
         payment.refund();
         repository.save(payment);
     }
 
     public Payment findPayment(String operationId) {
-        return repository.findByOperationId(operationId)
-                .orElseThrow(() -> new GarageException("Payment not found: " + operationId));
+        Payment payment = repository.findByOperationId(operationId);
+
+        if (payment == null) {
+            throw new GarageException("Payment not found: " + operationId);
+        }
+
+        return payment;
     }
 }

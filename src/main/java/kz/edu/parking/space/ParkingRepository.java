@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class ParkingRepository {
     private final Path file;
@@ -20,8 +19,20 @@ public class ParkingRepository {
 
     public void save(ParkingReservation reservation) {
         List<ParkingReservation> reservations = findAll();
-        reservations.removeIf(saved -> saved.getOperationId().equals(reservation.getOperationId()));
-        reservations.add(reservation);
+        boolean reservationWasUpdated = false;
+
+        for (int i = 0; i < reservations.size(); i++) {
+            ParkingReservation savedReservation = reservations.get(i);
+            if (savedReservation.getOperationId().equals(reservation.getOperationId())) {
+                reservations.set(i, reservation);
+                reservationWasUpdated = true;
+                break;
+            }
+        }
+
+        if (!reservationWasUpdated) {
+            reservations.add(reservation);
+        }
 
         List<String> lines = new ArrayList<>();
         for (ParkingReservation saved : reservations) {
@@ -31,13 +42,13 @@ public class ParkingRepository {
         write(lines);
     }
 
-    public Optional<ParkingReservation> findByOperationId(String operationId) {
+    public ParkingReservation findByOperationId(String operationId) {
         for (ParkingReservation reservation : findAll()) {
             if (reservation.getOperationId().equals(operationId)) {
-                return Optional.of(reservation);
+                return reservation;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     public boolean isSpaceReserved(String spaceId) {

@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class PaymentRepository {
     private final Path file;
@@ -20,8 +19,20 @@ public class PaymentRepository {
 
     public void save(Payment payment) {
         List<Payment> payments = findAll();
-        payments.removeIf(saved -> saved.getOperationId().equals(payment.getOperationId()));
-        payments.add(payment);
+        boolean paymentWasUpdated = false;
+
+        for (int i = 0; i < payments.size(); i++) {
+            Payment savedPayment = payments.get(i);
+            if (savedPayment.getOperationId().equals(payment.getOperationId())) {
+                payments.set(i, payment);
+                paymentWasUpdated = true;
+                break;
+            }
+        }
+
+        if (!paymentWasUpdated) {
+            payments.add(payment);
+        }
 
         List<String> lines = new ArrayList<>();
         for (Payment saved : payments) {
@@ -30,13 +41,13 @@ public class PaymentRepository {
         write(lines);
     }
 
-    public Optional<Payment> findByOperationId(String operationId) {
+    public Payment findByOperationId(String operationId) {
         for (Payment payment : findAll()) {
             if (payment.getOperationId().equals(operationId)) {
-                return Optional.of(payment);
+                return payment;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     public List<Payment> findAll() {
